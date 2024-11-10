@@ -6,10 +6,6 @@ RUN apk add --no-cache python3 make g++ git
 # Create app directory
 WORKDIR /usr/src/app
 
-# Swtich to node user
-#RUN chown node:node ./
-#USER node
-
 COPY .npmrc ./
 COPY package*.json ./
 
@@ -25,8 +21,9 @@ RUN npm run build:web
 # Stage 2 - the production environment
 FROM nginx:stable-alpine
 
-# Copy artifacts and nignx.conf
+# Copy artifacts and nginx.conf
 COPY --from=build /usr/src/app/dist/ /usr/share/nginx/html
 COPY --from=build /usr/src/app/docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-CMD sed -i "s#http://localhost:3333#$BACKEND_URL#g" /usr/share/nginx/html/main-*.js && nginx -g 'daemon off;'
+# Replace the placeholder with the actual BACKEND_URL and start Nginx
+CMD sed -i "s#http://localhost:3333#$BACKEND_URL#g" /usr/share/nginx/html/*.js && nginx -g 'daemon off;'
