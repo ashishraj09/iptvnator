@@ -26,4 +26,7 @@ COPY --from=build /usr/src/app/dist/ /usr/share/nginx/html
 COPY --from=build /usr/src/app/docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Replace the placeholder with the actual BACKEND_URL and start Nginx
-CMD sed -i "s#http://localhost:3333#$BACKEND_URL#g" /usr/share/nginx/html/*.js && nginx -g 'daemon off;'
+CMD ENABLE_EXTERNAL_DB_VALUE=$(if [ "$ENABLE_EXTERNAL_DB" = "true" ]; then echo "!0"; else echo "!1"; fi) && \
+    sed -i "s#http://localhost:3333#$BACKEND_URL#g" /usr/share/nginx/html/*.js && \
+    sed -i "s#ENABLE_EXTERNAL_DB:!1#ENABLE_EXTERNAL_DB:$ENABLE_EXTERNAL_DB_VALUE#g" /usr/share/nginx/html/*.js && \
+    nginx -g 'daemon off;'
