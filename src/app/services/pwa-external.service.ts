@@ -12,7 +12,6 @@ export class PWAExternalService {
   corsProxyUrl = AppConfig.BACKEND_URL;
 
   constructor(private http: HttpClient) {
-    console.log('AppConfig: ', AppConfig);
   }
 
   insertPlaylist(data: Playlist): Observable<Playlist> {
